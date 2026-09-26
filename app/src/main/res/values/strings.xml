@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">loginandRegister</string>
+    <string name="don_t_have_an_account_sing_up">Don\'t have an account? Sign Up</string>
+    <string name="already_have_an_account_log_in">Already have an account? Log in</string>
+    <string name="loginlogo">Login Logo</string>
+    <string name="app_connect">AppConnect</string>
+    <string name="create_account">Create Account</string>
+    <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="or_log_in_with">Or log in with</string>
+</resources>
