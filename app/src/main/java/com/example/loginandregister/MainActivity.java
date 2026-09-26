@@ -66,10 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Assuming your TextView ID is txtSignUp (you'll need to update this if it's different)
         binding.tvSignUp.setText(spannableString);
-        binding.tvSignUp.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
 
         binding.btnLogin.setOnClickListener(view -> {
             hideKeyboard();
