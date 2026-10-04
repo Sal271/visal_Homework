@@ -8,32 +8,38 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
-import com.example.loginandregister.databinding.ActivityRegisterBinding;
+import com.example.loginandregister.databinding.FragmentRegisterBinding;
 import com.google.android.material.snackbar.Snackbar;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterFragment extends Fragment {
 
-    private ActivityRegisterBinding binding;
+    private FragmentRegisterBinding binding;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentRegisterBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.register), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime() );
+        ViewCompat.setOnApplyWindowInsetsListener(binding.register, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
 
             v.setPadding(systemBars.left,
                     systemBars.top,
@@ -42,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
 
-        binding.registerRootLayout.setOnClickListener(v->{
+        binding.registerRootLayout.setOnClickListener(v -> {
             hideKeyboard();
         });
 
@@ -55,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Apply a color to "Log in" if found
         if (startIndex >= 0) {
-            int primaryColor = getResources().getColor(R.color.primary, getTheme());
+            int primaryColor = requireContext().getColor(R.color.primary);
             spannableString.setSpan(
                     new ForegroundColorSpan(primaryColor),
                     startIndex,
@@ -66,14 +72,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         binding.tvLogin.setText(spannableString);
         binding.tvLogin.setOnClickListener(v -> {
-            finish();
+            getParentFragmentManager().popBackStack();
         });
 
         binding.sivGoogle.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "Google Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
         binding.sivFacebook.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "Facebook Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
         binding.sivGithub.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "GitHub Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
 
-        binding.btnRegister.setOnClickListener(view -> {
+        binding.btnRegister.setOnClickListener(v -> {
             hideKeyboard();
 
             String email = binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
@@ -110,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             Snackbar.make(binding.getRoot(), "Registration Successful!\n" + message, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("OK", v -> {
+                    .setAction("OK", v1 -> {
 
                     }).show();
         });
@@ -119,13 +125,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard() {
-        View view = this.getCurrentFocus();
+        View view = requireActivity().getCurrentFocus();
         if (view == null) {
-            view = new View(this);
+            view = new View(requireContext());
         }
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void validateButtonSubmit() {
@@ -174,5 +182,11 @@ public class RegisterActivity extends AppCompatActivity {
         if (binding.tilConfirmPass.getEditText() != null) {
             binding.tilConfirmPass.getEditText().addTextChangedListener(handleTextChange);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
