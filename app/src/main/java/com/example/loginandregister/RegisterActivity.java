@@ -1,13 +1,13 @@
 package com.example.loginandregister;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -66,28 +66,50 @@ public class RegisterActivity extends AppCompatActivity {
 
         binding.tvLogin.setText(spannableString);
         binding.tvLogin.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-            startActivity(intent);
+            finish();
         });
+
+        binding.sivGoogle.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "Google Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
+        binding.sivFacebook.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "Facebook Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
+        binding.sivGithub.setOnClickListener(v -> Snackbar.make(binding.getRoot(), "GitHub Sign-Up Clicked", Snackbar.LENGTH_SHORT).show());
 
         binding.btnRegister.setOnClickListener(view -> {
             hideKeyboard();
-            String message = "";
 
+            String email = binding.tilEmail.getEditText() != null ? binding.tilEmail.getEditText().getText().toString().trim() : "";
+            String username = binding.tilUsername.getEditText() != null ? binding.tilUsername.getEditText().getText().toString().trim() : "";
+            String password = binding.tilPass.getEditText() != null ? binding.tilPass.getEditText().getText().toString() : "";
+            String confirmPassword = binding.tilConfirmPass.getEditText() != null ? binding.tilConfirmPass.getEditText().getText().toString() : "";
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.tilEmail.setError("Please enter a valid email address");
+                return;
+            } else {
+                binding.tilEmail.setError(null);
+            }
+
+            if (!password.equals(confirmPassword)) {
+                binding.tilConfirmPass.setError("Passwords do not match");
+                return;
+            } else {
+                binding.tilConfirmPass.setError(null);
+            }
+
+            String message = "";
             if (binding.tilEmail.getEditText() != null) {
-                message += "Email: " + binding.tilEmail.getEditText().getText().toString();
+                message += "Email: " + email;
             }
             if (binding.tilUsername.getEditText() != null) {
-                message += " Username: " + binding.tilUsername.getEditText().getText().toString();
+                message += " Username: " + username;
             }
             if (binding.tilPass.getEditText() != null) {
-                message += "\nPassword: " + binding.tilPass.getEditText().getText().toString();
+                message += "\nPassword: " + password;
             }
             if (binding.tilConfirmPass.getEditText() != null) {
-                message += " ConfirmPassword: " + binding.tilConfirmPass.getEditText().getText().toString();
+                message += " ConfirmPassword: " + confirmPassword;
             }
 
-            Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(binding.getRoot(), "Registration Successful!\n" + message, Snackbar.LENGTH_INDEFINITE)
                     .setAction("OK", v -> {
 
                     }).show();
@@ -107,10 +129,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void validateButtonSubmit() {
-        boolean isUsernameEmpty = binding.tilUsername.getEditText() == null || binding.tilUsername.getEditText().getText().toString().isEmpty();
-        boolean isPasswordEmpty = binding.tilPass.getEditText() == null || binding.tilPass.getEditText().getText().toString().isEmpty();
+        boolean isEmailEmpty = binding.tilEmail.getEditText() == null || binding.tilEmail.getEditText().getText().toString().trim().isEmpty();
+        boolean isUsernameEmpty = binding.tilUsername.getEditText() == null || binding.tilUsername.getEditText().getText().toString().trim().isEmpty();
+        boolean isPasswordEmpty = binding.tilPass.getEditText() == null || binding.tilPass.getEditText().getText().toString().trim().isEmpty();
+        boolean isConfirmPassEmpty = binding.tilConfirmPass.getEditText() == null || binding.tilConfirmPass.getEditText().getText().toString().trim().isEmpty();
 
-        if (isUsernameEmpty || isPasswordEmpty) {
+        if (isEmailEmpty || isUsernameEmpty || isPasswordEmpty || isConfirmPassEmpty) {
             binding.btnRegister.setEnabled(false);
         } else {
             binding.btnRegister.setEnabled(true);
@@ -135,12 +159,20 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
 
+        if (binding.tilEmail.getEditText() != null) {
+            binding.tilEmail.getEditText().addTextChangedListener(handleTextChange);
+        }
+
         if (binding.tilUsername.getEditText() != null) {
             binding.tilUsername.getEditText().addTextChangedListener(handleTextChange);
         }
 
         if (binding.tilPass.getEditText() != null) {
             binding.tilPass.getEditText().addTextChangedListener(handleTextChange);
+        }
+
+        if (binding.tilConfirmPass.getEditText() != null) {
+            binding.tilConfirmPass.getEditText().addTextChangedListener(handleTextChange);
         }
     }
 }
